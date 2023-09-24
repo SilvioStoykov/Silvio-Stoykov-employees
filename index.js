@@ -70,10 +70,12 @@ async function daysWorkedCalculation(){
     const pairsWorking = []
  
     for(let i = 0; i < pair.length; i++){
-        const startDateID1 = pair[i].dateStartID1 != ' NULL' || pair[i].dateStartID1 != null? new Date(pair[i].dateStartID1):new Date()
-        const startDateID2 = pair[i].dateStartID2 != ' NULL' || pair[i].dateStartID2 != null? new Date(pair[i].dateStartID2):new Date()
-        const endDateID1 = pair[i].dateEndID1 != ' NULL' || pair[i].dateEndID1 != null ? new Date(pair[i].dateEndID1):new Date()
-        const endDateID2 = pair[i].dateEndID2 != ' NULL' || pair[i].dateEndID2 != null ? new Date(pair[i].dateEndID2):new Date()
+        const startDateID1 = pair[i].dateStartID1 && pair[i].dateStartID1 !== ' NULL'? new Date(pair[i].dateStartID1): new Date(Date.now)
+        const startDateID2 = pair[i].dateStartID2 && pair[i].dateStartID2 != ' NULL'? new Date(pair[i].dateStartID2):Date()
+        const endDateID1 = pair[i].dateEndID1 && pair[i].dateEndID1 != ' NULL'? new Date(pair[i].dateEndID1):new Date()
+        console.log(endDateID1)
+        const endDateID2 = pair[i].dateEndID2 && pair[i].dateEndID2 != ' NULL'? new Date(pair[i].dateEndID2):new Date()
+        console.log(endDateID2)
 
         const overlapStart = Math.max(startDateID1.getTime(), startDateID2.getTime()) 
         const overlapEnd = Math.min(endDateID1.getTime(), endDateID2.getTime())
