@@ -5,19 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sirma Employees Problem</title>
     <script defer src="index.js"></script>
+    <link rel="stylesheet" href="tableStyle.css">
 </head>
 <body>
-    <input type="file" id="fileInput" accept=".csv">
-    <label for="date">Select a date format</label>
-    <select name="date" id="date-formats">
-        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-        <option value="DD-MM-YYYY">DD-MM-YYYY</option>
-        <option value="MM-DD-YYYY">MM-DD-YYYY</option>
-        <option value="MM.DD.YYYY">MM.DD.YYYY</option>
-        <option value="DD.MM.YYYY">DD.MM.YYYY</option>
-      </select>
-    <button id="fileUpload">Upload</button>
+    <div id="controls-container">
+        <input type="file" id="fileInput" accept=".csv">
+        <select name="date" id="date-formats">
+            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+            <option value="MM-DD-YYYY">MM-DD-YYYY</option>
+            <option value="MM.DD.YYYY">MM.DD.YYYY</option>
+          </select>
+        <button id="fileUpload">Upload</button>
+    </div>
 
 
     <table id="data-grid">

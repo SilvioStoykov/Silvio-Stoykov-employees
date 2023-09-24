@@ -1,46 +1,32 @@
-/*
-    1. Read the CSV file selected by the user via the file dialog
-        1.0 Reading the CSV file using the csv-parse node module
-        1.1 The CSV file has the format of: EmpID, ProjectID, DateFrom, DateTo
-        1.2 Sample data: 143, 12, 2013-11-01, 2014-01-05
-                         218, 10, 2012-05-16, NULL(today)
-                         143, 10, 2009-01-01, 2011-04-27
-    
-    2. The output must be displayed in the following form:
-        EmployeeID#1, EmployeeID#2, ProjectID, DaysWorked
-        2.1. The program must display the pair of employees that have spent most time on one project
-        2.2  Look-up for repeating ProjectIDs and compare their EmpID. If they are different, put them into an array.     
-*/
-
-
-
-/*Importing the PapaParse node module*/
-const pp = document.createElement("script"); 
+/*Importing the needed modules and libraries*/
+const pp = document.createElement("script"); //importing PapaParse
 pp.src = "node_modules/papaparse.js"; 
-
-const momentPackage = document.createElement("script")
+const momentPackage = document.createElement("script") //importing momentjs
 momentPackage.src = "node_modules/moment/moment.js"
+
 
 const inputFileFromSystem = document.querySelector('#fileInput')
 const uploadFile = document.querySelector('#fileUpload')
 const selectDateFormat = document.querySelector('#date-formats')
 
-uploadFile.addEventListener('click', displayPairs) //findPairs
-/*The CSV file is being read and parsed to JSON using the 
-PapaParse.js module*/
+/*Runner function*/
+function start(){
+    uploadFile.addEventListener('click', displayPairs)
+}
+
+start()
+
+/*ReadCSV() reads the file from the file system and parses it to JSON using the PapaParse library
+As the parsing function is asyncronous, ReadCSV() uses a Promise. */
 function readCSV(){
-    const workAssignments = []
-    const employees = []
-    /*Papa.parse returns its results asyncronously and Promise is needed
-    so the results array can be passed to other functions*/
     return new Promise((resolve, reject)=>{
         Papa.parse(inputFileFromSystem.files[0], //As there is only one file input, there is no possibility of getting more than one file                                                 from the file system and thus we are getting the only file that is being returned*/
             {
-                download: true,
-                header: true, //specifying that the file contains a header
-                skipEmptyLines: true,
+                download: true, //downloading the file content
+                header: true, //specifying that the file contains a header row
+                skipEmptyLines: true, 
                 complete: (results)=>{
-                    resolve(results)
+                    resolve(results) //passing the content of the file if the promise is resolved
                 },
                 error: (error)=>{
                     reject(error)
@@ -49,6 +35,9 @@ function readCSV(){
     })
 }
 
+/*The findPairs() function receives the JSON-ified data from the file
+and appends all of the pairs of employees that have worked together on the
+same projects to an array that is being returned.*/
 async function findPairs(){
     let pair = []
     const data = await readCSV()
@@ -64,51 +53,28 @@ async function findPairs(){
     return pair
 }
 
-function formatDates(date){
-   const year = date.getFullYear()
-   const month = String(date.getMonth()+1).padStart(2, '0')
-   const day = String(date.getDate()).padStart(2, '0')
-   let currentFormat
-
-   switch(selectDateFormat.value){
-        case 'MM-DD-YYYY':
-            new Date(moment(date).format('MM-DD-YYYY'))
-            break;
-        case 'DD-MM-YYYY':
-            new Date(moment(date).format('DD-MM-YYYY'))
-            break;
-        case 'MM.DD.YYYY':
-            new Date(moment(date).format('MM.DD.YYYY'))
-            break;
-        case 'DD.MM.YYYY':
-            new Date(moment(date).format('DD.MM.YYYY'))
-            break;
-        case 'MM/DD/YYYY':
-            new Date(moment(date).format('MM/DD/YYYY'))
-            break;
-        case 'DD/MM/YYYY':
-            new Date(moment(date).format('DD/MM/YYYY'))
-            break;
-   }
-}
-
+/*The daysWorkedCalculation() function calculates the number of days that a pair has worked on the same project
+and afterwards sort the pairs in descending order by the number of days.
+The function uses moment.js library to unify the date formats based on the preffered user date format.*/
 async function daysWorkedCalculation(){
     
     const pair = await findPairs()
     const pairsWorking = []
- 
+    
+    /*The actual date formatting happens here, making use of the ternary operator to determine
+    if the passed date is an actual one or a NULL (which means today).*/
     for(let i = 0; i < pair.length; i++){
-        const startDateID1 = pair[i].dateStartID1 && pair[i].dateStartID1 !== ' NULL'? new Date(pair[i].dateStartID1): new Date()
-        console.log(startDateID1)
-        const startDateID2 = pair[i].dateStartID2 && pair[i].dateStartID2 != ' NULL'? new Date(pair[i].dateStartID2):new Date()
-        const endDateID1 = pair[i].dateEndID1 && pair[i].dateEndID1 != ' NULL'? new Date(pair[i].dateEndID1):new Date()
-        console.log(endDateID1)
-        const endDateID2 = pair[i].dateEndID2 && pair[i].dateEndID2 != ' NULL'? new Date(pair[i].dateEndID2):new Date()
-        console.log(endDateID2)
+        const startDateID1 = pair[i].dateStartID1 && pair[i].dateStartID1 !== ' NULL' || pair[i].dateStartID1 !== null ? 
+        moment(pair[i].dateStartID1).format(selectDateFormat.value): moment().format(selectDateFormat.value)
+        const startDateID2 = pair[i].dateStartID2 && pair[i].dateStartID2 != ' NULL' || pair[i].dateStartID1 !== null? moment(pair[i].dateStartID2).format(selectDateFormat.value):moment().format(selectDateFormat.value.toString())
+        const endDateID1 = pair[i].dateEndID1 && pair[i].dateEndID1 != ' NULL' || pair[i].dateStartID1 != null ?  moment(pair[i].dateEndID1).format(selectDateFormat.value):moment().format(selectDateFormat.value.toString())
+        const endDateID2 = pair[i].dateEndID2 && pair[i].dateEndID2 != ' NULL' || pair[i].dateStartID1 != null? moment(pair[i].dateEndID2).format(selectDateFormat.value):moment().format(selectDateFormat.value.toString)
 
-        const overlapStart = Math.max(startDateID1.getTime(), startDateID2.getTime()) 
-        const overlapEnd = Math.min(endDateID1.getTime(), endDateID2.getTime())
-        
+
+        /*The formula for calculating the difference between overlapping time intervals 
+        is implemented here.*/
+        const overlapStart = parseInt(Math.max(moment(startDateID1).valueOf(), moment(startDateID2).valueOf())) 
+        const overlapEnd = parseInt(Math.min(moment(endDateID1).valueOf(), moment(endDateID2).valueOf()))
         if(overlapStart <= overlapEnd){
             let overlapDays = Math.floor((overlapEnd - overlapStart)/ (24 * 60 * 60 * 1000) + 1)
             pair[i].daysWorked += overlapDays
@@ -119,19 +85,20 @@ async function daysWorkedCalculation(){
         }
     }
     
+    /*Sorting the pairs by the days they have worked 
+    together on the same project in ascending order.*/
     pairsWorking.sort((a,b)=>b.daysWorked-a.daysWorked)
-    console.log(pairsWorking)
-    console.log(pair)
     return pairsWorking
 }
 
+/*The displayPairs() function displays the sorted pairs in a tabular form.*/
 async function displayPairs(){
     const data = await daysWorkedCalculation()
     const table = document.querySelector('#data-grid')
 
     data.forEach(element => {
         const row = document.createElement('tr')
-        row.innerHTML = `<td>${element.empID1}</td>
+        row.innerHTML =`<td>${element.empID1}</td>
                         <td>${element.empID2}</td>
                         <td>${element.projectID}</td>
                         <td>${element.daysWorked}</td>`
