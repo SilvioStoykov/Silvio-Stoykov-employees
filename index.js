@@ -25,7 +25,7 @@ const inputFileFromSystem = document.querySelector('#fileInput')
 const uploadFile = document.querySelector('#fileUpload')
 const selectDateFormat = document.querySelector('#date-formats')
 
-uploadFile.addEventListener('click', daysWorkedCalculation) //findPairs
+uploadFile.addEventListener('click', displayPairs) //findPairs
 /*The CSV file is being read and parsed to JSON using the 
 PapaParse.js module*/
 function readCSV(){
@@ -64,14 +64,43 @@ async function findPairs(){
     return pair
 }
 
+function formatDates(date){
+   const year = date.getFullYear()
+   const month = String(date.getMonth()+1).padStart(2, '0')
+   const day = String(date.getDate()).padStart(2, '0')
+   let currentFormat
+
+   switch(selectDateFormat.value){
+        case 'MM-DD-YYYY':
+            new Date(moment(date).format('MM-DD-YYYY'))
+            break;
+        case 'DD-MM-YYYY':
+            new Date(moment(date).format('DD-MM-YYYY'))
+            break;
+        case 'MM.DD.YYYY':
+            new Date(moment(date).format('MM.DD.YYYY'))
+            break;
+        case 'DD.MM.YYYY':
+            new Date(moment(date).format('DD.MM.YYYY'))
+            break;
+        case 'MM/DD/YYYY':
+            new Date(moment(date).format('MM/DD/YYYY'))
+            break;
+        case 'DD/MM/YYYY':
+            new Date(moment(date).format('DD/MM/YYYY'))
+            break;
+   }
+}
+
 async function daysWorkedCalculation(){
     
     const pair = await findPairs()
     const pairsWorking = []
  
     for(let i = 0; i < pair.length; i++){
-        const startDateID1 = pair[i].dateStartID1 && pair[i].dateStartID1 !== ' NULL'? new Date(pair[i].dateStartID1): new Date(Date.now)
-        const startDateID2 = pair[i].dateStartID2 && pair[i].dateStartID2 != ' NULL'? new Date(pair[i].dateStartID2):Date()
+        const startDateID1 = pair[i].dateStartID1 && pair[i].dateStartID1 !== ' NULL'? new Date(pair[i].dateStartID1): new Date()
+        console.log(startDateID1)
+        const startDateID2 = pair[i].dateStartID2 && pair[i].dateStartID2 != ' NULL'? new Date(pair[i].dateStartID2):new Date()
         const endDateID1 = pair[i].dateEndID1 && pair[i].dateEndID1 != ' NULL'? new Date(pair[i].dateEndID1):new Date()
         console.log(endDateID1)
         const endDateID2 = pair[i].dateEndID2 && pair[i].dateEndID2 != ' NULL'? new Date(pair[i].dateEndID2):new Date()
@@ -94,4 +123,18 @@ async function daysWorkedCalculation(){
     console.log(pairsWorking)
     console.log(pair)
     return pairsWorking
+}
+
+async function displayPairs(){
+    const data = await daysWorkedCalculation()
+    const table = document.querySelector('#data-grid')
+
+    data.forEach(element => {
+        const row = document.createElement('tr')
+        row.innerHTML = `<td>${element.empID1}</td>
+                        <td>${element.empID2}</td>
+                        <td>${element.projectID}</td>
+                        <td>${element.daysWorked}</td>`
+        table.appendChild(row)
+    });
 }

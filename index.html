@@ -20,7 +20,20 @@
     <button id="fileUpload">Upload</button>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <table id="data-grid">
+       <thead>
+            <tr id="headers">
+                <th class="emp1">Employee ID#1</th>
+                <th class="emp2">Employee ID#2</th>
+                <th class="project">Project ID</th>
+                <th class="days">Days worked</th>
+            </tr>
+       </thead>
+       <tbody id="data-body"></tbody>
+    </table>
+
+
+   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
    <script src="web/lib/moment.min.js"></script>
 </body>
 </html>
