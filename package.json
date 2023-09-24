@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "csv-parse": "^5.5.0",
+    "moment": "^2.29.4",
+    "momentjs": "^2.0.0",
+    "papaparse": "^5.4.1"
+  }
+}

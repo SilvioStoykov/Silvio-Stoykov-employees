@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sirma Employees Problem</title>
+    <script defer src="index.js"></script>
+</head>
+<body>
+    <input type="file" id="fileInput" accept=".csv">
+    <label for="date">Select a date format</label>
+    <select name="date" id="date-formats">
+        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+        <option value="DD-MM-YYYY">DD-MM-YYYY</option>
+        <option value="MM-DD-YYYY">MM-DD-YYYY</option>
+        <option value="MM.DD.YYYY">MM.DD.YYYY</option>
+        <option value="DD.MM.YYYY">DD.MM.YYYY</option>
+      </select>
+    <button id="fileUpload">Upload</button>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+   <script src="web/lib/moment.min.js"></script>
+</body>
+</html>
